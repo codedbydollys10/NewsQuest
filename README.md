@@ -1,6 +1,6 @@
 # 🚀 NewsQuest — Play the News. Predict the Future.
 
-## 🧠 Overview
+## 🧠 Overview 
 
 **NewsQuest** is a next-generation, gamified news platform that transforms passive news reading into an **interactive, competitive, and intelligent experience**.
 
