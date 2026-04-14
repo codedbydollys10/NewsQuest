@@ -1,5 +1,7 @@
 
-# 🚀 NewsQuest — Play the News. Predict the Future.
+# 🚀 NewsQuest — Play the News. Predict the Future.V
+    demo vdo:-  [ [https://drive.google.com/file/d/16L4UAObIVtJ-0O8D-kh9CL0mhlab5j6K/view?usp=drive_link
+](url)]
 
 ## 🧠 Overview 
 
