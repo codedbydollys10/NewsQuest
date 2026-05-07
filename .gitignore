@@ -8,6 +8,9 @@ backend/node_modules
 .env.development
 .env.production
 
+# backend
+/backend/supabase/
+
 # build output
 dist/
 build/
