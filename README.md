@@ -17,7 +17,7 @@ Instead of endlessly scrolling headlines, users can:
 
 ### Built with modern web technologies and AI-powered content generation
 
-NewsQuest combines education, engagement, prediction intelligence, and competitive gameplay into one immersive platform.
+## NewsQuest combines education, engagement, prediction intelligence, and competitive gameplay into one immersive platform.
 =======
 ## 🎥 Demo
 
@@ -369,16 +369,16 @@ Supabase powers:
 
 ---
 
-# 🖥️ Frontend
+## 🖥️ Frontend
 
-## Tech Stack
+### Tech Stack
 
 * React.js
 * TypeScript
 * Tailwind CSS
 * Vite
 
-## Features
+### Features
 
 ✨ Modern gaming-inspired UI
 🌙 Dark theme with neon accents
@@ -387,9 +387,9 @@ Supabase powers:
 
 ---
 
-# ⚡ Backend
+## ⚡ Backend
 
-## Features
+### Features
 
 ✅ News aggregation
 ✅ AI quiz generation
@@ -400,7 +400,7 @@ Supabase powers:
 
 ---
 
-# 🧠 Core Gameplay Loop
+## 🧠 Core Gameplay Loop
 
 Read news 📰
 Take quiz 🧪
@@ -677,7 +677,7 @@ npm run typecheck
 
 ---
 
-# 📁 Project Structure
+## 📁 Project Structure
 
 ```bash
 NewsQuest/
@@ -705,7 +705,7 @@ NewsQuest/
 
 ---
 
-# 🏆 What Makes NewsQuest Unique?
+## 🏆 What Makes NewsQuest Unique?
 
 👉 Combines news + gaming + AI + prediction systems
 👉 Makes current affairs interactive and addictive
@@ -715,7 +715,7 @@ NewsQuest/
 
 ---
 
-# 🌍 SDG Alignment
+## 🌍 SDG Alignment
 
 | SDG    | Goal                                  | Implementation                             |
 | ------ | ------------------------------------- | ------------------------------------------ |
@@ -725,7 +725,7 @@ NewsQuest/
 
 ---
 
-### 🚀 Key Innovations
+## 🚀 Key Innovations
 
 🧪 AI-generated quizzes from live news
 🔮 Real-world prediction gameplay
@@ -738,7 +738,7 @@ NewsQuest/
 ---
 
 
-### 💬 Final Thought
+## 💬 Final Thought
 
 NewsQuest is not just a news app — it’s a gamified intelligence platform.
 
@@ -751,7 +751,7 @@ NewsQuest is not just a news app — it’s a gamified intelligence platform.
 
 
 
-### ⭐ If You Like This Project
+## ⭐ If You Like This Project
 
 Give it a ⭐ on GitHub and support interactive learning through AI-powered news gaming!
 
