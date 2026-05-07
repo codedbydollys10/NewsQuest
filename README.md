@@ -54,7 +54,7 @@ Traditional news platforms are often:
 ❌ Lacking interaction and personalization
 ❌ Not designed for younger digital audiences
 
-This results in low engagement, poor knowledge retention, and reduced critical thinking around current events.
+###This results in low engagement, poor knowledge retention, and reduced critical thinking around current events.
 =======
 Most news apps are:
 
@@ -73,7 +73,7 @@ NewsQuest changes that by making news:
 
 ---
 
-# 💡 Solution
+## 💡 Solution
 
 NewsQuest solves this by combining:
 
@@ -90,7 +90,7 @@ The platform transforms news into a daily learning game that rewards curiosity, 
 
 ---
 
-# 🏗️ Platform Architecture
+## 🏗️ Platform Architecture
 
 ## 🔷 High-Level Flow
 
@@ -98,7 +98,7 @@ News APIs → Backend Processing → AI Content Generation → Quiz & Prediction
 
 ---
 
-# 🤖 AI-Powered Intelligence System
+## 🤖 AI-Powered Intelligence System
 
 NewsQuest uses AI to intelligently enhance news content and gameplay.
 
