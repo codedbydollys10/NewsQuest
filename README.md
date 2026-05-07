@@ -3,7 +3,7 @@
 </p>
 
 # 🚀 NewsQuest — Play the News. Predict the Future.
-# 🧠 Overview
+## 🧠 Overview
 
 NewsQuest is a full-stack, AI-powered, gamified news platform that transforms passive news consumption into an interactive learning experience.
 
@@ -15,7 +15,9 @@ Instead of endlessly scrolling headlines, users can:
 ⚔️ Battle other users in real-time quiz challenges
 📈 Earn XP, maintain streaks, and climb leaderboards
 
-Built with modern web technologies and AI-powered content generation, NewsQuest combines education, engagement, prediction intelligence, and competitive gameplay into one immersive platform.
+### Built with modern web technologies and AI-powered content generation
+
+NewsQuest combines education, engagement, prediction intelligence, and competitive gameplay into one immersive platform.
 =======
 ## 🎥 Demo
 
@@ -723,7 +725,7 @@ NewsQuest/
 
 ---
 
-# 🚀 Key Innovations
+### 🚀 Key Innovations
 
 🧪 AI-generated quizzes from live news
 🔮 Real-world prediction gameplay
@@ -736,7 +738,7 @@ NewsQuest/
 ---
 
 
-# 💬 Final Thought
+### 💬 Final Thought
 
 NewsQuest is not just a news app — it’s a gamified intelligence platform.
 
@@ -749,7 +751,7 @@ NewsQuest is not just a news app — it’s a gamified intelligence platform.
 
 
 
-# ⭐ If You Like This Project
+### ⭐ If You Like This Project
 
 Give it a ⭐ on GitHub and support interactive learning through AI-powered news gaming!
 
