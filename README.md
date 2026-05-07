@@ -54,7 +54,7 @@ Traditional news platforms are often:
 ❌ Lacking interaction and personalization
 ❌ Not designed for younger digital audiences
 
-###This results in low engagement, poor knowledge retention, and reduced critical thinking around current events.
+### This results in low engagement, poor knowledge retention, and reduced critical thinking around current events.
 =======
 Most news apps are:
 
