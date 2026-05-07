@@ -202,7 +202,6 @@ const fetchLeaderboardViaApi = async (): Promise<LeaderboardResponse | null> => 
 };
 
 export const fetchLeaderboard = async () => {
-<<<<<<< HEAD
   const timeoutPromise = new Promise<never>((_resolve, reject) => 
     setTimeout(() => reject(new Error('Leaderboard request timed out')), 12000)
   );
@@ -235,15 +234,4 @@ export const fetchLeaderboard = async () => {
   })();
   
   return Promise.race([fetchPromise, timeoutPromise]) as Promise<LeaderboardResponse>;
-=======
-  const apiData = await fetchLeaderboardViaApi().catch(() => null);
-  if (apiData) return apiData;
-
-  const fallbackData = await fetchLeaderboardFromSupabase().catch(() => null);
-  if (fallbackData) {
-    return fallbackData;
-  }
-
-  throw new Error('Failed to load leaderboard. Start backend at http://127.0.0.1:3001 or verify Supabase access.');
->>>>>>> 407b1d06b7d0653f8934a80082ad524a0c31360d
 };

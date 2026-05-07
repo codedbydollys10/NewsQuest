@@ -79,13 +79,14 @@ const HomeFeed = () => {
             <GlassCard hover={false} className="p-3">
               <h4 className="font-display text-xs font-bold text-nq-text-secondary mb-3">DAILY LEADERS</h4>
               {[...leaders]
-                .sort((a, b) => b.streak - a.streak)
+                .sort((a, b) => b.totalXP - a.totalXP)
                 .slice(0, 5)
-                .map((u) => (
-                  <div key={u.id} className="flex items-center gap-2 py-1">
+                .map((u, rank) => (
+                  <div key={u.id} className="flex items-center gap-2 py-2 px-2 rounded hover:bg-nq-cyan/10 transition-colors">
+                    <span className="font-display text-xs font-bold text-nq-orange w-5">{rank + 1}</span>
                     <span className="text-sm">{['🏃', '🧠', '🔮', '⚡', '👻'][u.avatarId % 5]}</span>
                     <span className="text-xs text-foreground flex-1 truncate">{u.username}</span>
-                    <span className="font-display text-xs font-bold text-nq-orange">{u.streak}🔥</span>
+                    <span className="font-mono text-xs font-bold text-nq-cyan">{u.totalXP.toLocaleString()}</span>
                   </div>
                 ))}
             </GlassCard>

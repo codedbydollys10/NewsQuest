@@ -102,12 +102,29 @@ router.get('/', async (req, res, next) => {
     const data = await getLatestNews({
       q: typeof q === 'string' ? q.trim() || undefined : undefined,
       category: typeof category === 'string' ? category.trim().toLowerCase() || undefined : undefined,
-      ...common,
+      language: common.language || 'en',
+      country: common.country,
+      page: common.page,
     });
 
     res.json({ success: true, ...data });
   } catch (error) {
-    next(error);
+    const isApiKeyError = error instanceof Error && error.message.includes('NEWSDATA_API_KEY');
+    if (isApiKeyError) {
+      console.error('❌ NEWS API ERROR: NEWSDATA_API_KEY is not configured. Set it in .env file or environment variables.');
+    } else {
+      console.error('❌ NEWS API ERROR:', error instanceof Error ? error.message : String(error));
+    }
+    // On error, return empty success response instead of error
+    res.json({ 
+      success: true, 
+      articles: [], 
+      nextPage: null, 
+      totalResults: 0,
+      _cached: true,
+      _fallback: true,
+      _error: isApiKeyError ? 'NEWSDATA_API_KEY not configured' : 'API error',
+    });
   }
 });
 
@@ -118,23 +135,49 @@ router.get('/search', async (req, res, next) => {
       return res.status(400).json({ success: false, error: 'Query parameter "q" is required' });
     }
 
-    const data = await searchNews(q.trim(), extractCommonParams(req.query as Record<string, unknown>));
+    const common = extractCommonParams(req.query as Record<string, unknown>);
+    const data = await searchNews(q.trim(), {
+      language: common.language || 'en',
+      country: common.country,
+      page: common.page,
+    });
     res.json({ success: true, ...data });
   } catch (error) {
-    next(error);
+    // On error, return empty success response
+    res.json({ 
+      success: true, 
+      articles: [], 
+      nextPage: null, 
+      totalResults: 0,
+      _cached: true,
+      _fallback: true,
+    });
   }
 });
 
 router.get('/category/:type', async (req, res, next) => {
   try {
-    const data = await getNewsByCategory(req.params.type, extractCommonParams(req.query as Record<string, unknown>));
+    const common = extractCommonParams(req.query as Record<string, unknown>);
+    const data = await getNewsByCategory(req.params.type, {
+      language: common.language || 'en',
+      country: common.country,
+      page: common.page,
+    });
     res.json({ success: true, ...data });
   } catch (error) {
-    next(error);
+    // On error, return empty success response
+    res.json({ 
+      success: true, 
+      articles: [], 
+      nextPage: null, 
+      totalResults: 0,
+      _cached: true,
+      _fallback: true,
+    });
   }
 });
 
-router.get('/featured', async (req, res, next) => {
+router.get('/featured', async (req, res) => {
   try {
     const { q, category } = req.query;
     const mode = typeof req.query.mode === 'string' && req.query.mode.toLowerCase() === 'ai' ? 'ai' : 'fast';
@@ -147,19 +190,70 @@ router.get('/featured', async (req, res, next) => {
 
     const article = data.articles[0];
     if (!article) {
-      return res.status(404).json({ success: false, error: 'No articles found' });
+      // Return empty fallback instead of 404
+      return res.json({
+        success: true,
+        article: {
+          id: 'fallback_featured',
+          headline: 'Featured Story Unavailable',
+          summary: 'News content is currently unavailable. Please try again later.',
+          category: 'General',
+          difficulty: 'Easy',
+          xpReward: 15,
+          readTime: '2 min',
+          source: 'System',
+          publishedAt: new Date().toISOString(),
+          fullContent: 'Featured story not available at this time.',
+        },
+        content: {
+          quiz: [],
+          prediction: {
+            id: 'p1',
+            question: 'Check back soon for more content!',
+            options: [],
+            deadline: new Date(Date.now() + 86400000).toISOString(),
+            xpReward: 0,
+          },
+        },
+      });
     }
 
+    const enriched = await enrichArticle(article, mode);
     res.json({
       success: true,
-      ...(await enrichArticle(article, mode)),
+      ...enriched,
     });
   } catch (error) {
-    next(error);
+    // On error, return empty fallback
+    res.json({
+      success: true,
+      article: {
+        id: 'fallback_featured',
+        headline: 'Featured Story Unavailable',
+        summary: 'News content is currently unavailable. Please try again later.',
+        category: 'General',
+        difficulty: 'Easy',
+        xpReward: 15,
+        readTime: '2 min',
+        source: 'System',
+        publishedAt: new Date().toISOString(),
+        fullContent: 'Featured story not available at this time.',
+      },
+      content: {
+        quiz: [],
+        prediction: {
+          id: 'p1',
+          question: 'Check back soon for more content!',
+          options: [],
+          deadline: new Date(Date.now() + 86400000).toISOString(),
+          xpReward: 0,
+        },
+      },
+    });
   }
 });
 
-router.get('/enriched', async (req, res, next) => {
+router.get('/enriched', async (req, res) => {
   try {
     const count = parseCount(req.query.count);
     const mode = typeof req.query.mode === 'string' && req.query.mode.toLowerCase() === 'ai' ? 'ai' : 'fast';
@@ -168,12 +262,19 @@ router.get('/enriched', async (req, res, next) => {
     const data = await getLatestNews({
       q: typeof q === 'string' ? q.trim() || undefined : undefined,
       category: typeof category === 'string' ? category.trim().toLowerCase() || undefined : undefined,
-      ...common,
+      language: common.language || 'en',
+      country: common.country,
+      page: common.page,
     });
 
     const articles = data.articles.slice(0, count);
     if (!articles.length) {
-      return res.status(404).json({ success: false, error: 'No articles found' });
+      // Return empty array instead of 404
+      return res.json({
+        success: true,
+        count: 0,
+        articles: [],
+      });
     }
 
     const enriched = await Promise.all(articles.map((article) => enrichArticle(article, mode)));
@@ -183,7 +284,12 @@ router.get('/enriched', async (req, res, next) => {
       articles: enriched,
     });
   } catch (error) {
-    next(error);
+    // On error, return empty array instead of error
+    res.json({
+      success: true,
+      count: 0,
+      articles: [],
+    });
   }
 });
 

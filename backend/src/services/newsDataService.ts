@@ -285,6 +285,55 @@ const transformArticles = (rawArticles: Array<Record<string, unknown>>): NewsArt
       };
     });
 
+const generateMockArticles = (count: number): NewsArticle[] => {
+  const mockHeadlines = [
+    'Major Tech Breakthrough: New AI Model Shows Promise',
+    'Climate Conference Reaches Historic Agreement',
+    'Global Markets Rally on Economic Data',
+    'Political Leaders Meet for Trade Negotiations',
+    'Athletic Records Broken at International Championship',
+    'Scientific Discovery Could Revolutionize Medicine',
+    'Environmental Crisis Demands Urgent Action',
+    'Business Merger Creates Industry Giant',
+    'International Cooperation Addresses Global Challenge',
+    'Youth Environmental Movement Gains Momentum',
+  ];
+
+  const mockSummaries = [
+    'Researchers announce a groundbreaking discovery that could transform the industry and impact millions worldwide.',
+    'Economic indicators suggest strong growth despite challenging market conditions in several regions.',
+    'Nations unite to address pressing issues and work toward sustainable solutions for future generations.',
+    'Industry experts predict significant changes ahead as new technologies reshape the landscape.',
+    'Community leaders celebrate progress on initiatives aimed at improving quality of life.',
+  ];
+
+  const mockContent = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
+
+  const categories = ['Technology', 'Environment', 'Economy', 'Polity', 'Sports', 'Science'];
+
+  const articles: NewsArticle[] = [];
+  for (let i = 0; i < Math.min(count, mockHeadlines.length); i++) {
+    articles.push({
+      id: `mock_${Date.now()}_${i}`,
+      headline: mockHeadlines[i],
+      summary: mockSummaries[i % mockSummaries.length],
+      fullContent: mockContent,
+      category: categories[i % categories.length],
+      source: 'NewsQuest',
+      publishedAt: new Date(Date.now() - i * 3600000).toISOString(),
+      readTime: '3 min',
+      imageUrl: null,
+      sourceUrl: null,
+      difficulty: ['Easy', 'Medium', 'Hard'][i % 3] as 'Easy' | 'Medium' | 'Hard',
+      xpReward: [15, 20, 25][i % 3],
+      quiz: [],
+      prediction: null,
+    });
+  }
+
+  return articles;
+};
+
 const fetchFromNewsData = async (params: NewsDataQuery) => {
   const apiKey = process.env.NEWSDATA_API_KEY?.trim();
   if (!apiKey) {
@@ -296,17 +345,8 @@ const fetchFromNewsData = async (params: NewsDataQuery) => {
   );
 
   const cacheKey = buildCacheKey(cleanParams);
-  const cached = cache.get<{
-    articles: NewsArticle[];
-    nextPage: string | null;
-    totalResults: number;
-    _cached: boolean;
-  }>(cacheKey);
 
-  if (cached) {
-    return { ...cached, _cached: true };
-  }
-
+  // Check for in-flight requests to avoid duplicate API calls
   const inFlight = inFlightRequests.get(cacheKey);
   if (inFlight) {
     return inFlight;
@@ -321,51 +361,69 @@ const fetchFromNewsData = async (params: NewsDataQuery) => {
       url.searchParams.set(key, String(value));
     }
 
-    const response = await fetch(url.toString());
-    if (!response.ok) {
-      const body = await response.text().catch(() => '');
-      if (response.status === 429) {
-        const fallback = lastSuccessfulResults.get(cacheKey)
-          ?? latestSuccessfulResult
-          ?? cache.get<{
-            articles: NewsArticle[];
-            nextPage: string | null;
-            totalResults: number;
-            _cached: boolean;
-          }>(cacheKey);
+    // Retry logic for 429 errors
+    let lastError: Error | null = null;
+    const maxRetries = 6;
+    const baseDelay = 2000; // 2 seconds
 
-        if (fallback) {
-          return { ...fallback, _cached: true };
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        const response = await fetch(url.toString());
+        
+        if (response.status === 429) {
+          // Rate limited - wait and retry
+          if (attempt < maxRetries - 1) {
+            const delay = baseDelay * Math.pow(2, attempt); // Exponential backoff: 2s, 4s, 8s, 16s, 32s
+            console.log(`⏳ API rate limited, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            continue;
+          }
+          throw new NewsDataError('API rate limit exceeded after all retries', 429);
+        }
+
+        if (!response.ok) {
+          const body = await response.text().catch(() => '');
+          throw new NewsDataError(`NewsData API responded with ${response.status}`, response.status, body);
+        }
+
+        const data = await response.json() as {
+          status?: string;
+          results?: Array<Record<string, unknown>>;
+          nextPage?: string | null;
+          totalResults?: number;
+          message?: string;
+        };
+
+        if (data.status !== 'success') {
+          throw new NewsDataError(data.message ?? 'NewsData API returned a non-success status', 422, data);
+        }
+
+        const result = {
+          articles: transformArticles(data.results ?? []),
+          nextPage: data.nextPage ?? null,
+          totalResults: data.totalResults ?? 0,
+          _cached: false,
+        };
+
+        // Store in cache for fallback only
+        cache.set(cacheKey, result);
+        lastSuccessfulResults.set(cacheKey, result);
+        latestSuccessfulResult = result;
+        savePersistentCache();
+        
+        return result;
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error(String(error));
+        
+        // Don't retry on non-rate-limit errors
+        if (!(error instanceof NewsDataError && error.statusCode === 429)) {
+          throw lastError;
         }
       }
-
-      throw new NewsDataError(`NewsData API responded with ${response.status}`, response.status, body);
     }
 
-    const data = await response.json() as {
-      status?: string;
-      results?: Array<Record<string, unknown>>;
-      nextPage?: string | null;
-      totalResults?: number;
-      message?: string;
-    };
-
-    if (data.status !== 'success') {
-      throw new NewsDataError(data.message ?? 'NewsData API returned a non-success status', 422, data);
-    }
-
-    const result = {
-      articles: transformArticles(data.results ?? []),
-      nextPage: data.nextPage ?? null,
-      totalResults: data.totalResults ?? 0,
-      _cached: false,
-    };
-
-    cache.set(cacheKey, result);
-    lastSuccessfulResults.set(cacheKey, result);
-    latestSuccessfulResult = result;
-    savePersistentCache();
-    return result;
+    // All retries exhausted - throw the last error
+    throw lastError || new NewsDataError('Failed to fetch from NewsData API', 500);
   })();
 
   inFlightRequests.set(cacheKey, request);

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { CheckCircle, AlertCircle, Zap, X } from 'lucide-react';
+import { CheckCircle, AlertCircle, Zap } from 'lucide-react';
 import { GlassCard } from './GlassCard';
 
 interface CauseChainResultProps {
@@ -129,7 +129,6 @@ export const CauseChainResult = ({ result, onClose }: CauseChainResultProps) => 
               className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-nq-orange/70 hover:bg-nq-orange/90 transition-colors text-white font-bold"
             >
               <span>Continue</span>
-              <X size={16} />
             </motion.button>
           </div>
         </GlassCard>

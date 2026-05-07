@@ -399,48 +399,56 @@ export const useGameStore = create<GameStore>((set, get) => ({
         }
       };
 
-      const perCategoryBatches = await Promise.all(
-        fetchCategories.map(async (category) => {
-          const targetCategory = category === 'Science' ? 'Technology' : category;
-          const dedupe = new Map<string, Article>();
-          const takeForCategory = (items: Article[], forceCategory = false) => {
-            for (const item of items) {
-              const fits = item.category === targetCategory || (category === 'Science' && item.category === 'Science');
-              if (!fits && !forceCategory) continue;
-              if (!dedupe.has(item.id)) {
-                const withCategory = (forceCategory && !fits) || category === 'Science'
-                  ? { ...item, category: targetCategory }
-                  : item;
-                dedupe.set(item.id, withCategory);
-              }
-            }
-          };
-
-          const primary = await safeFetchRawNews(category);
-          takeForCategory(primary);
-
-          if (dedupe.size < 5) {
-            const globalSameCategory = await safeFetchRawNews(category, { country: false });
-            takeForCategory(globalSameCategory);
-          }
-
-          if (dedupe.size < MIN_ARTICLES_PER_CATEGORY) {
-            const queries = CATEGORY_BACKFILL_QUERIES[targetCategory] ?? [`${targetCategory} latest news`];
-            for (const q of queries) {
-              if (dedupe.size >= MIN_ARTICLES_PER_CATEGORY) break;
-              const searched = await safeFetchRawNews(undefined, { country: false, q });
-              takeForCategory(searched, true);
+      // Add delay between categories to avoid rate limiting (thundering herd problem)
+      const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+      
+      const perCategoryBatches: Article[][] = [];
+      
+      for (const category of fetchCategories) {
+        const targetCategory = category === 'Science' ? 'Technology' : category;
+        const dedupe = new Map<string, Article>();
+        const takeForCategory = (items: Article[], forceCategory = false) => {
+          for (const item of items) {
+            const fits = item.category === targetCategory || (category === 'Science' && item.category === 'Science');
+            if (!fits && !forceCategory) continue;
+            if (!dedupe.has(item.id)) {
+              const withCategory = (forceCategory && !fits) || category === 'Science'
+                ? { ...item, category: targetCategory }
+                : item;
+              dedupe.set(item.id, withCategory);
             }
           }
+        };
 
-          if (dedupe.size < MIN_ARTICLES_PER_CATEGORY) {
-            const globalTop = await safeFetchRawNews(undefined, { country: false });
-            takeForCategory(globalTop, true);
+        const primary = await safeFetchRawNews(category);
+        takeForCategory(primary);
+
+        if (dedupe.size < 5) {
+          const globalSameCategory = await safeFetchRawNews(category, { country: false });
+          takeForCategory(globalSameCategory);
+        }
+
+        if (dedupe.size < MIN_ARTICLES_PER_CATEGORY) {
+          const queries = CATEGORY_BACKFILL_QUERIES[targetCategory] ?? [`${targetCategory} latest news`];
+          for (const q of queries) {
+            if (dedupe.size >= MIN_ARTICLES_PER_CATEGORY) break;
+            const searched = await safeFetchRawNews(undefined, { country: false, q });
+            takeForCategory(searched, true);
           }
+        }
 
-          return Array.from(dedupe.values()).slice(0, 5);
-        }),
-      );
+        if (dedupe.size < MIN_ARTICLES_PER_CATEGORY) {
+          const globalTop = await safeFetchRawNews(undefined, { country: false });
+          takeForCategory(globalTop, true);
+        }
+
+        perCategoryBatches.push(Array.from(dedupe.values()).slice(0, 5));
+        
+        // Add 200ms delay between categories to avoid rate limiting
+        if (fetchCategories.indexOf(category) < fetchCategories.length - 1) {
+          await delay(200);
+        }
+      }
 
       const freshArticles = remapCategory(perCategoryBatches.flat());
       const nextArticles = balanceFeedArticles(mergeUniqueArticles(cachedArticles, freshArticles));

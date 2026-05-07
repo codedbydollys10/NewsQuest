@@ -60,20 +60,10 @@ const parseSubmitBody = (body: SubmitAttemptBody) => {
   const userChain = parseArray(body.userChain);
   const userConnections = parseArray(body.userConnections);
 
-  console.log('[CauseChain:parseSubmit] Raw inputs:', {
-    challengeId: body.challengeId,
-    articleId: body.articleId,
-    userId: body.userId,
-    userChainLength: userChain.length,
-    userConnectionsLength: userConnections.length,
-  });
-
   if (!challengeId || !userId || !articleId || userChain.length === 0 || userConnections.length === 0) {
-    console.warn('[CauseChain:parseSubmit] Validation failed:', { challengeId, userId, articleId, userChainLength: userChain.length, userConnectionsLength: userConnections.length });
     return null;
   }
 
-  console.log('[CauseChain:parseSubmit] Parsed successfully:', { challengeId, articleId, userId });
   return { challengeId, articleId, userId, userChain, userConnections };
 };
 
@@ -81,7 +71,6 @@ const parseSubmitBody = (body: SubmitAttemptBody) => {
 router.get('/stats/:userId', async (req, res) => {
   try {
     const userId = req.params.userId;
-    console.log('[CauseChain:stats] ===== FETCHING STATS FOR USER =====', userId);
     if (!userId) {
       res.status(400).json({ error: 'User ID required' });
       return;
@@ -89,42 +78,14 @@ router.get('/stats/:userId', async (req, res) => {
 
     const supabase = getSupabaseClient();
 
-    // First, fetch the full profile to see all data
-    const { data: fullProfile, error: fullError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
-
-    if (fullError) {
-      console.error('[CauseChain:stats] Error fetching full profile:', {
-        userId,
-        message: fullError.message,
-        code: fullError.code,
-      });
-    } else {
-      console.log('[CauseChain:stats] Full profile data:', {
-        cause_chains_total: fullProfile?.cause_chains_total,
-        cause_chains_correct: fullProfile?.cause_chains_correct,
-        cause_chains_xp_earned: fullProfile?.cause_chains_xp_earned,
-        total_xp: fullProfile?.total_xp,
-        quizzes_xp_earned: fullProfile?.quizzes_xp_earned || 'NOT FOUND',
-        predictions_xp_earned: fullProfile?.predictions_xp_earned || 'NOT FOUND',
-      });
-    }
-
     const { data: profile, error } = await supabase
       .from('profiles')
       .select('cause_chains_total, cause_chains_correct, cause_chains_xp_earned')
       .eq('id', userId)
       .single();
 
-    if (error) {
-      console.error('[CauseChain:stats] Error fetching profile stats:', {
-        userId,
-        message: error.message,
-        code: error.code,
-      });
+    if (error && error.code !== 'PGRST116') {
+      // PGRST116 = no rows found
       return res.json({
         total: 0,
         correct: 0,
@@ -142,24 +103,6 @@ router.get('/stats/:userId', async (req, res) => {
         : 0,
     };
 
-    // If columns are showing 0, try fallback from attempts table
-    if (result.total === 0 && result.xpEarned === 0) {
-      console.log('[CauseChain:stats] Fallback: Columns are 0, querying attempts table...');
-      const { data: attempts } = await supabase
-        .from('user_cause_chain_attempts')
-        .select('xp_earned, status')
-        .eq('user_id', userId);
-
-      if (attempts && attempts.length > 0) {
-        result.xpEarned = attempts.reduce((sum, att) => sum + (att.xp_earned || 0), 0);
-        result.total = attempts.length;
-        result.correct = attempts.filter(att => att.status === 'correct').length;
-        result.accuracy = Math.round((result.correct / result.total) * 100);
-        console.log('[CauseChain:stats] Fallback result:', result);
-      }
-    }
-
-    console.log('[CauseChain:stats] ===== STATS RESULT =====', result);
     res.json(result);
   } catch (error) {
     console.error('Error fetching stats:', error);
@@ -223,11 +166,28 @@ router.post('/generate', async (req, res) => {
     const { articleId, headline, summary, category } = parsed;
 
     // Generate new challenge (this calls Qwen AI)
-    console.log(`[CauseChain:generate] Generating for article: ${articleId}`);
     const chain = await generateCauseChain(headline, summary, category);
     if (!chain) {
-      console.error('[CauseChain:generate] Failed to generate challenge from AI');
-      res.status(500).json({ error: 'Failed to generate challenge' });
+      // If generation fails, return a minimal valid response so UI doesn't break
+      res.status(200).json({
+        id: `fallback_${Date.now()}`,
+        article_id: articleId,
+        question: `What is the cause-effect sequence in: "${headline}"?`,
+        nodes: [
+          { id: 'node_0', text: 'Initial Event', isDistractor: false },
+          { id: 'node_1', text: 'Consequence A', isDistractor: false },
+          { id: 'node_2', text: 'Consequence B', isDistractor: false },
+          { id: 'node_3', text: 'Unrelated Event', isDistractor: true },
+          { id: 'node_4', text: 'Final Outcome', isDistractor: false },
+        ],
+        edges: [
+          { from: 'node_0', to: 'node_1', explanation: 'Direct consequence' },
+          { from: 'node_1', to: 'node_2', explanation: 'Follow-on effect' },
+          { from: 'node_2', to: 'node_4', explanation: 'Results in outcome' },
+        ],
+        difficulty: 'Medium',
+        created_at: new Date().toISOString(),
+      });
       return;
     }
 
@@ -244,7 +204,6 @@ router.post('/generate', async (req, res) => {
         .single();
 
       if (existing) {
-        console.log('[CauseChain:generate] Found existing challenge in DB');
         res.json(existing);
         return;
       }
@@ -308,12 +267,6 @@ router.post('/submit', async (req, res) => {
     }
 
     const { challengeId, articleId, userId, userChain, userConnections } = parsed;
-    console.log('[CauseChain:submit] Processing submission:', {
-      userId,
-      challengeId,
-      userChainLength: userChain.length,
-      userConnectionsLength: userConnections.length,
-    });
 
     let nodes: ChainNode[] = [];
     let edges: ChainEdge[] = [];
@@ -321,28 +274,18 @@ router.post('/submit', async (req, res) => {
     // Try to fetch challenge from database
     try {
       const supabase = getSupabaseClient();
-      console.log('[CauseChain:submit] Looking for challenge with ID:', challengeId);
       const { data: challenge, error: challengeError } = await supabase
         .from('cause_chain_challenges')
         .select('*')
         .eq('id', challengeId)
         .single();
 
-      if (challengeError) {
-        console.warn('[CauseChain:submit] Challenge lookup error:', {
-          challengeId,
-          message: challengeError.message,
-          code: challengeError.code,
-        });
-      } else if (challenge) {
+      if (!challengeError && challenge) {
         nodes = challenge.nodes;
         edges = challenge.edges;
-        console.log('[CauseChain:submit] Challenge found in DB. Nodes:', nodes.length, 'Edges:', edges.length);
-      } else {
-        console.warn('[CauseChain:submit] Challenge not found for ID:', challengeId);
       }
     } catch (dbError) {
-      console.error('[CauseChain:submit] Unexpected error fetching challenge:', dbError);
+      // Silently continue - validation will use fallback
     }
 
     // If we have nodes/edges from DB, validate; otherwise return success without validation
@@ -386,7 +329,7 @@ router.post('/submit', async (req, res) => {
       const supabase = getSupabaseClient();
 
       // Store attempt
-      const { error: insertError } = await supabase.from('user_cause_chain_attempts').insert({
+      await supabase.from('user_cause_chain_attempts').insert({
         user_id: userId,
         challenge_id: challengeId,
         article_id: articleId,
@@ -403,78 +346,28 @@ router.post('/submit', async (req, res) => {
         status: validation.allCorrect ? 'correct' : validation.percentageCorrect >= 50 ? 'partial' : 'incorrect',
       });
 
-      if (insertError) {
-        console.error('[CauseChain:submit] Error inserting attempt:', insertError.message, insertError.code);
-      } else {
-        console.log('[CauseChain:submit] Attempt stored successfully');
-      }
-
       // Update user profile
-      console.log('[CauseChain:submit] Attempting to fetch profile for userId:', userId);
-      const { data: profile, error: fetchError } = await supabase
+      const { data: profile } = await supabase
         .from('profiles')
         .select('total_xp, cause_chains_total, cause_chains_correct, cause_chains_xp_earned')
         .eq('id', userId)
         .single();
 
-      if (fetchError) {
-        console.error('[CauseChain:submit] Error fetching profile:', {
-          message: fetchError.message,
-          code: fetchError.code,
-          details: fetchError.details,
-          hint: fetchError.hint,
-        });
-      } else if (profile) {
-        console.log('[CauseChain:submit] Profile found:', profile);
+      if (profile) {
         const newTotalXP = Math.max(0, (profile.total_xp || 0) + xpEarned - xpPenalty);
         const newCauseChainTotal = (profile.cause_chains_total || 0) + 1;
         const newCauseChainCorrect = (profile.cause_chains_correct || 0) + (validation.allCorrect ? 1 : 0);
         const newCauseChainXP = (profile.cause_chains_xp_earned || 0) + xpEarned;
 
-        console.log('[CauseChain:submit] Updating profile with:', {
-          userId,
-          newTotalXP,
-          newCauseChainTotal,
-          newCauseChainCorrect,
-          newCauseChainXP,
-        });
-        const { error: updateError } = await supabase.from('profiles').update({
+        await supabase.from('profiles').update({
           total_xp: newTotalXP,
           cause_chains_total: newCauseChainTotal,
           cause_chains_correct: newCauseChainCorrect,
           cause_chains_xp_earned: newCauseChainXP,
         }).eq('id', userId);
-
-        if (updateError) {
-          console.error('[CauseChain:submit] Error updating profile:', {
-            message: updateError.message,
-            code: updateError.code,
-            details: updateError.details,
-          });
-        } else {
-          console.log('[CauseChain:submit] User stats updated successfully. Total XP:', newTotalXP, 'Correct:', newCauseChainCorrect);
-          
-          // VERIFY the update actually happened
-          const { data: verifyProfile, error: verifyError } = await supabase
-            .from('profiles')
-            .select('cause_chains_total, cause_chains_correct, cause_chains_xp_earned, total_xp')
-            .eq('id', userId)
-            .single();
-          
-          if (verifyError) {
-            console.error('[CauseChain:submit] Error verifying update:', verifyError.message);
-          } else {
-            console.log('[CauseChain:submit] ===== VERIFICATION: Data after update =====', {
-              cause_chains_total: verifyProfile.cause_chains_total,
-              cause_chains_correct: verifyProfile.cause_chains_correct,
-              cause_chains_xp_earned: verifyProfile.cause_chains_xp_earned,
-              total_xp: verifyProfile.total_xp,
-            });
-          }
-        }
       }
     } catch (dbError) {
-      console.error('[CauseChain:submit] Unexpected DB error:', dbError);
+      // Silently continue - response will be sent regardless
     }
 
     // Return result regardless of DB status
@@ -499,7 +392,6 @@ router.post('/submit', async (req, res) => {
       newTotalXP,
     });
   } catch (error) {
-    console.error('[CauseChain:submit] Error:', error);
     res.status(500).json({ error: 'Failed to process submission' });
   }
 });

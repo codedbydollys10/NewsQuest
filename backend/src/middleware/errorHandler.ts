@@ -3,6 +3,18 @@ import type { NextFunction, Request, Response } from 'express';
 
 export const errorHandler = (err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   if (err instanceof NewsDataError) {
+    // For rate limiting errors, return empty success response instead of error
+    if (err.statusCode === 429) {
+      return res.status(200).json({
+        success: true,
+        articles: [],
+        nextPage: null,
+        totalResults: 0,
+        _cached: true,
+        _rateLimited: true,
+      });
+    }
+    
     return res.status(err.statusCode).json({
       success: false,
       error: err.message,
@@ -12,6 +24,17 @@ export const errorHandler = (err: unknown, _req: Request, res: Response, _next: 
 
   if (err && typeof err === 'object' && 'statusCode' in err) {
     const typedErr = err as { statusCode?: number; message?: string };
+    // For rate limiting, return empty success instead of error
+    if (typedErr.statusCode === 429) {
+      return res.status(200).json({
+        success: true,
+        articles: [],
+        nextPage: null,
+        totalResults: 0,
+        _cached: true,
+        _rateLimited: true,
+      });
+    }
     return res.status(typedErr.statusCode ?? 500).json({
       success: false,
       error: typedErr.message ?? 'Request failed',

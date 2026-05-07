@@ -1,5 +1,6 @@
 # dependencies
-node_modules/
+frontend/node_modules
+backend/node_modules
 
 # environment variables (IMPORTANT - do not upload secrets)
 .env
@@ -29,3 +30,6 @@ coverage/
 
 # misc
 *.local
+
+# sql migration
+SQL_MIGRATION_EXECUTE_ME.sql

@@ -24,6 +24,9 @@ export type ProfileSyncPayload = {
   losses: number;
   draws: number;
   recent_form: string[];
+  cause_chains_total?: number;
+  cause_chains_correct?: number;
+  cause_chains_xp_earned?: number;
 };
 
 const getSupabaseBase = () => {
@@ -164,66 +167,96 @@ const getProfileRank = (profile: ProfileSyncPayload) => {
 export const syncUserTables = async (profile: ProfileSyncPayload) => {
   const rank = getProfileRank(profile);
 
-  const [profilesRow, userRow, userProfileRow] = await Promise.all([
-    restUpsert<Record<string, unknown>>('profiles', {
-      id: profile.id,
-      username: profile.username,
-      email: profile.email ?? '',
-      avatar_id: profile.avatar_id,
-      level: profile.current_level,
-      xp: profile.total_xp,
-      streak: profile.streak_count,
-      rank,
-      is_onboarded: true,
-    }),
-    restUpsert<Record<string, unknown>>('user', {
-      id: profile.id,
-      username: profile.username,
-      email: profile.email ?? '',
-    }),
-    restUpsert<Record<string, unknown>>('user_profile', {
-      id: profile.id,
-      username: profile.username,
-      email: profile.email ?? '',
-      avatarid: profile.avatar_id,
-      level: profile.current_level,
-      xp: profile.total_xp,
-      streak: profile.streak_count,
-      battle_rating: profile.battle_rating,
-      battle_tier: profile.battle_tier,
-    }),
-  ]);
+  try {
+    const [profilesRow, userRow, userProfileRow] = await Promise.all([
+      restUpsert<Record<string, unknown>>('profiles', {
+        id: profile.id,
+        username: profile.username,
+        email: profile.email ?? '',
+        avatar_id: profile.avatar_id,
+        avatar_customization: profile.avatar_customization,
+        current_level: profile.current_level,
+        total_xp: profile.total_xp,
+        xp_to_next_level: profile.xp_to_next_level,
+        streak_count: profile.streak_count,
+        last_active_date: profile.last_active_date,
+        interests: profile.interests,
+        daily_goal: profile.daily_goal,
+        mode: profile.mode,
+        badges: profile.badges,
+        battle_rating: profile.battle_rating,
+        battle_tier: profile.battle_tier,
+        wins: profile.wins,
+        losses: profile.losses,
+        draws: profile.draws,
+        recent_form: profile.recent_form,
+        cause_chains_total: profile.cause_chains_total ?? 0,
+        cause_chains_correct: profile.cause_chains_correct ?? 0,
+        cause_chains_xp_earned: profile.cause_chains_xp_earned ?? 0,
+      }),
+      restUpsert<Record<string, unknown>>('user', {
+        id: profile.id,
+        username: profile.username,
+        email: profile.email ?? '',
+      }),
+      restUpsert<Record<string, unknown>>('user_profile', {
+        id: profile.id,
+        username: profile.username,
+        email: profile.email ?? '',
+        avatarid: profile.avatar_id,
+        level: profile.current_level,
+        xp: profile.total_xp,
+        streak: profile.streak_count,
+        battle_rating: profile.battle_rating,
+        battle_tier: profile.battle_tier,
+      }),
+    ]);
 
-  await Promise.allSettled([
-    replaceUserInterests(profile.id, profile.interests),
-    upsertQuizResults(profile),
-    upsertUserActivity(profile),
-    syncArticlesReadSnapshot(profile),
-  ]);
+    await Promise.allSettled([
+      replaceUserInterests(profile.id, profile.interests),
+      upsertQuizResults(profile),
+      upsertUserActivity(profile),
+      syncArticlesReadSnapshot(profile),
+    ]);
 
-  return {
-    profiles: profilesRow,
-    user: userRow,
-    user_profile: userProfileRow,
-  };
+    return {
+      profiles: profilesRow,
+      user: userRow,
+      user_profile: userProfileRow,
+    };
+  } catch (error) {
+    // If database sync fails, still return the profile so frontend can continue
+    console.error('Profile sync error:', error);
+    return {
+      profiles: null,
+      user: null,
+      user_profile: null,
+    };
+  }
 };
 
 export const validateAccessToken = async (accessToken: string) => {
-  const base = getSupabaseBase();
-  const response = await fetch(`${base}/auth/v1/user`, {
-    headers: {
-      ...getHeaders(),
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
+  try {
+    const base = getSupabaseBase();
+    const response = await fetch(`${base}/auth/v1/user`, {
+      headers: {
+        ...getHeaders(),
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
 
-  if (!response.ok) {
+    if (!response.ok) {
+      return null;
+    }
+
+    const user = await response.json() as { id?: string } | null;
+    if (!user?.id || typeof user.id !== 'string') {
+      return null;
+    }
+    return user.id;
+  } catch (error) {
+    // If Supabase is not configured or request fails, return null
+    console.error('Access token validation error:', error);
     return null;
   }
-
-  const user = await response.json() as { id?: string } | null;
-  if (!user?.id || typeof user.id !== 'string') {
-    return null;
-  }
-  return user.id;
 };

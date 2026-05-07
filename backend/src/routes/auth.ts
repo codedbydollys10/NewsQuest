@@ -112,6 +112,9 @@ router.post('/register', async (req, res) => {
         losses: 0,
         draws: 0,
         recent_form: [],
+        cause_chains_total: 0,
+        cause_chains_correct: 0,
+        cause_chains_xp_earned: 0,
       });
     }
 

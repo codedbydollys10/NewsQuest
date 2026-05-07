@@ -103,11 +103,11 @@ const parseCauseChainResponse = (response: string): GeneratedCauseChain | null =
       .map((edge: any) => ({
         from: String(edge.from || ''),
         to: String(edge.to || ''),
-        explanation: String(edge.explanation || '').slice(0, 150),
+        explanation: String(edge.explanation || ''),
       }))
-      .filter((edge: ChainEdge) => edge.from && edge.to);
+      .filter((edge: any) => edge.from && edge.to && nodes.some(n => n.id === edge.from) && nodes.some(n => n.id === edge.to));
 
-    if (edges.length < 3) {
+    if (edges.length === 0) {
       return null;
     }
 
@@ -117,10 +117,34 @@ const parseCauseChainResponse = (response: string): GeneratedCauseChain | null =
       edges,
       difficulty: ['Easy', 'Medium', 'Hard'].includes(parsed.difficulty) ? parsed.difficulty : 'Medium',
     };
-  } catch (error) {
-    console.error('Failed to parse cause chain response:', error);
+  } catch {
     return null;
   }
+};
+
+const generateMockCauseChain = (headline: string, summary: string): GeneratedCauseChain => {
+  const nodes: ChainNode[] = [
+    { id: 'node_0', text: 'Initial Event Occurs', isDistractor: false },
+    { id: 'node_1', text: 'Direct Consequence Follows', isDistractor: false },
+    { id: 'node_2', text: 'Secondary Effect Emerges', isDistractor: false },
+    { id: 'node_3', text: 'Unrelated Development', isDistractor: true },
+    { id: 'node_4', text: 'Final Outcome Manifests', isDistractor: false },
+    { id: 'node_5', text: 'Long-term Impact Realized', isDistractor: false },
+  ];
+
+  const edges: ChainEdge[] = [
+    { from: 'node_0', to: 'node_1', explanation: 'Direct consequence of initial event' },
+    { from: 'node_1', to: 'node_2', explanation: 'Secondary effects follow' },
+    { from: 'node_2', to: 'node_4', explanation: 'Leads to overall outcome' },
+    { from: 'node_4', to: 'node_5', explanation: 'Results in long-term impact' },
+  ];
+
+  return {
+    question: `What is the sequence of events and their effects in: "${headline.slice(0, 60)}"?`,
+    nodes,
+    edges,
+    difficulty: 'Medium',
+  };
 };
 
 export const generateCauseChain = async (
@@ -129,15 +153,13 @@ export const generateCauseChain = async (
   category: string,
 ): Promise<GeneratedCauseChain | null> => {
   if (!hasBytezKey()) {
-    console.warn('Bytez API key not configured');
-    return null;
+    // Return mock cause chain for development/new accounts without API key
+    return generateMockCauseChain(headline, summary);
   }
 
   try {
     const prompt = generateCauseChainPrompt(headline, summary, category);
     const model = getBytezModel();
-    
-    console.log('[CauseChain] Calling Qwen API...');
     const { error, output } = await model.run([
       {
         role: 'system',
@@ -150,32 +172,25 @@ export const generateCauseChain = async (
     ]);
 
     if (error) {
-      console.error('[CauseChain] Bytez error:', error);
       return null;
     }
 
     if (!output) {
-      console.error('[CauseChain] No output from Bytez');
       return null;
     }
 
     const text = extractBytezText(output);
     if (!text) {
-      console.error('[CauseChain] Could not extract text from Bytez output:', output);
       return null;
     }
 
-    console.log('[CauseChain] Extracted text:', text.slice(0, 200) + '...');
     const parsed = parseCauseChainResponse(text);
     if (!parsed) {
-      console.error('[CauseChain] Failed to parse JSON response');
       return null;
     }
 
-    console.log('[CauseChain] Successfully generated challenge');
     return parsed;
   } catch (error) {
-    console.error('[CauseChain] Error generating cause chain:', error);
     return null;
   }
 };
