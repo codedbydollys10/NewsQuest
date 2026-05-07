@@ -1,4 +1,6 @@
-
+<p align="center">
+  <img src="./logo.png" alt="NewsQuest Logo" width="220"/>
+</p>
 
 # 🚀 NewsQuest — Play the News. Predict the Future.
 # 🧠 Overview
