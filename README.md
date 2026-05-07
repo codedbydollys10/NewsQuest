@@ -304,7 +304,7 @@ NewsQuest uses AI to create:
 
 ### Key AI integrations
 
-# 🏆 Leaderboard System
+## 🏆 Leaderboard System
 
 Global rankings based on:
 
@@ -413,7 +413,7 @@ Repeat 🔁
 
 ---
 
-# 🚀 Future Scope
+## 🚀 Future Scope
 
 ## Planned Features
 
