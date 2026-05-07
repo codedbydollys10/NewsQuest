@@ -1,248 +1,477 @@
 
+<p align="center">
+  <img src="./logo.png" alt="NewsQuest Logo" width="200"/>
+</p>
 # 🚀 NewsQuest — Play the News. Predict the Future.
 
-   ## 🎥 Demo Video and SCreenshots
+# 🧠 Overview
 
-   Watch Project Video and ScreenShots:-(https://drive.google.com/drive/folders/1Oovq3uGSwtUBX1nqZK2-f2wLChszdKnX)
-   
+NewsQuest is a full-stack, AI-powered, gamified news platform that transforms passive news consumption into an interactive learning experience.
 
-## 🧠 Overview 
+Instead of endlessly scrolling headlines, users can:
 
-**NewsQuest** is a next-generation, gamified news platform that transforms passive news reading into an **interactive, competitive, and intelligent experience**.
+🎮 Play through news like a game
+🧪 Solve quizzes generated from real articles
+🔮 Predict future outcomes of world events
+⚔️ Battle other users in real-time quiz challenges
+📈 Earn XP, maintain streaks, and climb leaderboards
 
-Instead of just scrolling headlines, users:
-
-* 🎮 Play through news like a game
-* 🧪 Test knowledge with quizzes
-* 🔮 Predict real-world outcomes
-* 📈 Track progress with XP & streaks
-* 🏆 Compete on leaderboards
+Built with modern web technologies and AI-powered content generation, NewsQuest combines education, engagement, prediction intelligence, and competitive gameplay into one immersive platform.
 
 ---
 
-## 🎯 Why NewsQuest?
+# 🌍 Problem Statement
 
-Traditional news platforms are:
+Traditional news platforms are often:
 
-* ❌ Passive
-* ❌ Hard to retain
-* ❌ Not engaging
+❌ Passive and boring
+❌ Difficult to retain and understand
+❌ Overwhelming with endless information
+❌ Lacking interaction and personalization
+❌ Not designed for younger digital audiences
 
-**NewsQuest makes news:**
-
-* ✅ Interactive
-* ✅ Fun
-* ✅ Educational
-* ✅ Addictive (in a good way)
+This results in low engagement, poor knowledge retention, and reduced critical thinking around current events.
 
 ---
 
-## ✨ Core Features
+# 💡 Solution
 
-### 📰 1. Smart News Feed
+NewsQuest solves this by combining:
 
-* Bite-sized, structured news
-* Clean UI for fast reading
-* Categories like Polity, Economy, Tech
+📰 Interactive news consumption
+🧪 AI-generated quizzes
+🔮 Real-world prediction systems
+⚔️ Competitive battle modes
+🏆 XP, streaks, and gamification
+🤖 AI-powered content generation
+📡 Real-time backend systems
 
----
-
-### 🧪 2. Quiz System
-
-* 2–3 MCQs per article
-* Instant feedback + explanations
-* XP rewards for correct answers
+The platform transforms news into a daily learning game that rewards curiosity, consistency, and critical thinking.
 
 ---
 
-### 🔮 3. Prediction Engine (USP 🚀)
+# 🏗️ Platform Architecture
 
-* Predict future outcomes of real-world events
+## 🔷 High-Level Flow
+
+News APIs → Backend Processing → AI Content Generation → Quiz & Prediction Engine → Supabase Database → React Frontend → User Gameplay → XP / Leaderboards / Streak Tracking
+
+---
+
+# 🤖 AI-Powered Intelligence System
+
+NewsQuest uses AI to intelligently enhance news content and gameplay.
+
+## 🧠 AI Quiz Generation
+
+Role: Automatically generate MCQs from live news articles.
+
+Powered By:
+
+* Qwen API
+* NewIO API
+
+Features:
+
+* Context-aware questions
+* Instant explanations
+* Difficulty balancing
+* Fast response generation
+
+Output:
+
+* Multiple-choice questions
+* Correct answers
+* Explanations
+* XP rewards
+
+---
+
+## 🔮 AI Prediction Engine (USP 🚀)
+
+Role: Turn real-world events into prediction challenges.
+
+Examples:
+
+* “Will inflation rise next month?”
+* “Will this bill pass parliament?”
+* “Will Team X win the finals?”
+
+Features:
+
 * Confidence-based answering
-* Accuracy tracking over time
+* Prediction history tracking
+* Accuracy analytics
+* Long-term performance scoring
+
+Output:
+
+* User prediction score
+* Accuracy percentage
+* Prediction leaderboard ranking
 
 ---
 
-### ⚔️ 4. Battle Mode
+# 📰 Smart News Feed
 
-* Compete with other users in real-time
-* Answer questions faster and more accurately
-* Earn bonus XP and rank higher
+## Features
 
----
+✅ Bite-sized news format
+✅ Fast and clean reading experience
+✅ Category-based filtering
+✅ Mobile-first UI
+✅ Interactive article experience
 
-### ⭐ 5. XP & Level System
+Categories include:
 
-* Earn XP by:
-
-  * Reading news
-  * Solving quizzes
-  * Making predictions
-* Level up as you progress
-
----
-
-### 🔥 6. Streak System
-
-* Daily activity tracking
-* Rewards for consistency
-* Encourages habit building
+* Politics
+* Economy
+* Technology
+* Sports
+* Science
+* Global Affairs
 
 ---
 
-### 🏆 7. Leaderboard
+# 🧪 Quiz System
 
-* Global ranking system
-* Based on XP and performance
-* Weekly competition resets
+Every article includes interactive quizzes.
 
----
+## Features
 
-### 📅 8. Daily Quests
-
-* Complete tasks like:
-
-  * Read articles
-  * Take quizzes
-  * Make predictions
-* Earn bonus rewards
+🎯 2–3 AI-generated MCQs per article
+⚡ Instant feedback
+📘 Answer explanations
+⭐ XP rewards for correct answers
+📊 Performance tracking
 
 ---
 
-## 🧠 AI-Powered Intelligence
+# ⚔️ Battle Mode
 
-NewsQuest uses advanced AI to generate:
+## Real-Time Competitive Gameplay
 
-* 🧪 Quiz questions
-* 🔮 Prediction scenarios
+Users can compete against others in live quiz battles.
 
-### APIs Used:
+### Features
 
-* **Qwen API** → For intelligent content generation
-* **NewIO API** → For dynamic processing and responses
+⚡ Fast-paced question answering
+🏆 Bonus XP rewards
+📈 Rank progression
+🎮 Competitive learning environment
+
+Battle scoring depends on:
+
+* Accuracy
+* Speed
+* Consistency
 
 ---
 
-## 🗄️ Backend & Database
+# ⭐ XP & Gamification System
 
-### 🔹 Supabase
+## Users earn XP by:
 
-* Authentication
-* Database storage
-* Real-time updates
+📰 Reading articles
+🧪 Solving quizzes
+🔮 Making predictions
+⚔️ Winning battles
+🔥 Maintaining streaks
+
+## Gamification Features
+
+🏆 Global leaderboards
+📅 Daily quests
+🔥 Daily streak tracking
+🎖️ Level progression system
+
+---
+
+# 🔥 Streak System
+
+Role: Encourage consistent learning habits.
+
+Features:
+
+* Daily login streaks
+* Reading streaks
+* Quiz streaks
+* XP multipliers for consistency
+
+---
+
+# 🏆 Leaderboard System
+
+Global rankings based on:
+
+⭐ XP earned
+🧪 Quiz performance
+🔮 Prediction accuracy
+⚔️ Battle victories
+
+Features:
+
+* Weekly resets
+* Competitive ranking
+* User progression tracking
+
+---
+
+# 📅 Daily Quest System
+
+Users receive dynamic daily objectives such as:
+
+✅ Read 5 articles
+✅ Complete 3 quizzes
+✅ Make 2 predictions
+✅ Win 1 battle
+
+Rewards:
+⭐ Bonus XP
+🏆 Progress boosts
+🔥 Streak protection
+
+---
+
+# ⚙️ Backend & Database
+
+## 🗄️ Supabase Integration
+
+Supabase powers:
+
+✅ Authentication
+✅ Database storage
+✅ Real-time systems
+✅ User progression tracking
 
 Stores:
 
-* User progress
+* User profiles
 * XP & levels
-* Quiz results
+* Quiz history
 * Predictions
-* Leaderboard data
+* Streak data
+* Leaderboards
 
 ---
 
-## 🎮 Core Game Loop
+# 🖥️ Frontend
 
-1. Read news 📰
-2. Take quiz 🧪
-3. Make prediction 🔮
-4. Earn XP ⭐
-5. Maintain streak 🔥
-6. Climb leaderboard 🏆
-7. Repeat 🔁
+## Tech Stack
 
----
+* React.js
+* TypeScript
+* Tailwind CSS
+* Vite
 
-## 🎨 UI/UX Highlights
+## Features
 
-* Dark theme with neon accents
-* Smooth animations
-* Game-like interface
-* Mobile-first design
+✨ Modern gaming-inspired UI
+🌙 Dark theme with neon accents
+📱 Mobile-first responsive design
+⚡ Smooth transitions & animations
 
 ---
 
-## 🚀 Future Scope
+# ⚡ Backend
 
-* AI-powered summaries
-* Voice-based news (TTS)
-* Avatar progression system
-* Multiplayer challenges
-* Personalized recommendations
+## Features
+
+✅ News aggregation
+✅ AI quiz generation
+✅ Prediction processing
+✅ Real-time gameplay systems
+✅ XP & progression handling
+✅ Supabase integration
 
 ---
 
-## 📂 Project Structure (Example)
+# 🧠 Core Gameplay Loop
+
+Read news 📰
+Take quiz 🧪
+Make prediction 🔮
+Battle players ⚔️
+Earn XP ⭐
+Maintain streak 🔥
+Climb leaderboard 🏆
+Repeat 🔁
+
+---
+
+# 🚀 Future Scope
+
+## Planned Features
+
+🤖 AI-generated summaries
+🎤 Voice-based news (TTS)
+🧍 Avatar progression system
+⚔️ Multiplayer tournaments
+🧠 Personalized recommendations
+📊 Advanced analytics dashboard
+📱 Mobile app version
+
+---
+
+# 🔐 Security & Best Practices
+
+✅ Environment variables protected using `.env`
+✅ Supabase authentication system
+✅ API keys hidden via `.gitignore`
+✅ Modular scalable architecture
+✅ Type-safe frontend using TypeScript
+
+---
+
+# 🧪 How to Run Locally
+
+## Prerequisites
+
+* Node.js 18+
+* npm
+* Internet connection for news APIs
+
+---
+
+## 1️⃣ Backend Setup
 
 ```bash
-NewsQuest/
-│── src/
-│   ├── components/
-│   ├── pages/
-│   ├── services/
-│   ├── utils/
-│── public/
-│── README.md
+cd backend
+npm install
+```
+
+Create:
+
+```bash
+backend/.env.local
+```
+
+Add:
+
+```env
+NEWSDATA_API_KEY=your_api_key
+```
+
+Run backend:
+
+```bash
+npm run start
+```
+
+Default backend URL:
+
+```bash
+http://127.0.0.1:3001
 ```
 
 ---
 
-## 🏆 What Makes It Unique?
+## 2️⃣ Frontend Setup
 
-👉 Combines **news + gaming + AI + prediction**
-👉 Encourages **critical thinking**
-👉 Builds **daily learning habits**
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Default frontend URL:
+
+```bash
+http://127.0.0.1:4000
+```
 
 ---
 
-## 💬 Final Thought
+# ⚙️ Useful Scripts
 
-**NewsQuest is not just a news app — it's a learning game.**
+## Frontend
+
+```bash
+npm run dev
+npm run build
+npm run lint
+npm run test
+```
+
+## Backend
+
+```bash
+npm run start
+npm run build
+npm run typecheck
+```
+
+---
+
+# 📁 Project Structure
+
+```bash
+NewsQuest/
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   ├── utils/
+│   │   └── assets/
+│   └── package.json
+│
+├── backend/
+│   ├── routes/
+│   ├── services/
+│   ├── utils/
+│   ├── .env.local
+│   └── package.json
+│
+├── public/
+├── README.md
+└── .gitignore
+```
+
+---
+
+# 🏆 What Makes NewsQuest Unique?
+
+👉 Combines news + gaming + AI + prediction systems
+👉 Makes current affairs interactive and addictive
+👉 Encourages critical thinking & retention
+👉 Turns learning into competition
+👉 Creates daily knowledge-building habits
+
+---
+
+# 🌍 SDG Alignment
+
+| SDG    | Goal                                  | Implementation                             |
+| ------ | ------------------------------------- | ------------------------------------------ |
+| SDG 4  | Quality Education                     | Interactive learning through gamified news |
+| SDG 9  | Industry, Innovation & Infrastructure | AI-powered news intelligence platform      |
+| SDG 16 | Peace, Justice & Strong Institutions  | Encourages informed civic awareness        |
+
+---
+
+# 🚀 Key Innovations
+
+🧪 AI-generated quizzes from live news
+🔮 Real-world prediction gameplay
+⚔️ Real-time battle system
+⭐ Full XP & progression mechanics
+🔥 Habit-building streak system
+🏆 Competitive leaderboard ecosystem
+🧠 AI-enhanced educational experience
+
+---
+
+
+# ⭐ If You Like This Project
+
+Give it a ⭐ on GitHub and support interactive learning through AI-powered news gaming!
+
+---
+
+# 💬 Final Thought
+
+NewsQuest is not just a news app — it’s a gamified intelligence platform.
 
 > “Don’t just read the news. Play it. Predict it. Master it.” 🚀
-
-
-## What You Need
-
-- Node.js 18 or newer
-- npm
-- Internet access for live news APIs
-
-## Project Structure
-
-- `frontend/` - React app, UI, and client-side state
-- `backend/` - News API, enrichment API, and content generation endpoints
-
-## Setup
-
-1. Install dependencies in both folders:
-   - `cd backend && npm install`
-   - `cd frontend && npm install`
-2. Make sure the backend environment file exists:
-   - `backend/.env.local` should contain `NEWSDATA_API_KEY`
-   - You can copy values from `backend/.env.example` and fill in your key
-3. Start the backend first:
-   - `cd backend && npm run start`
-   - Default backend URL: `http://127.0.0.1:3001`
-4. Start the frontend in a second terminal:
-   - `cd frontend && npm run dev`
-   - Default frontend URL: `http://127.0.0.1:4000`
-
-## Environment Notes
-
-- The frontend uses `/api` in development and Vite proxies it to the backend automatically.
-- If you want to point the frontend to a hosted backend, set `VITE_API_URL` in `frontend/.env`.
-- If you see `ECONNREFUSED 127.0.0.1:3001`, the backend is not running yet.
-
-## Useful Scripts
-
-Frontend:
-- `cd frontend && npm run dev`
-- `cd frontend && npm run build`
-- `cd frontend && npm run lint`
-- `cd frontend && npm run test`
-
-Backend:
-- `cd backend && npm run start`
-- `cd backend && npm run build`
-- `cd backend && npm run typecheck`
