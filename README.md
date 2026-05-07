@@ -43,7 +43,7 @@ This makes current events engaging, memorable, and fun.
 
 ---
 
-# 🌍 Problem Statement
+## 🌍 Problem Statement
 
 
 Traditional news platforms are often:
@@ -197,7 +197,7 @@ Categories include:
 
 ---
 
-# 🧪 Quiz System
+## 🧪 Quiz System
 
 Every article includes interactive quizzes.
 
@@ -211,7 +211,7 @@ Every article includes interactive quizzes.
 
 ---
 
-# ⚔️ Battle Mode
+## ⚔️ Battle Mode
 
 ## Real-Time Competitive Gameplay
 
@@ -232,7 +232,7 @@ Battle scoring depends on:
 
 ---
 
-# ⭐ XP & Gamification System
+## ⭐ XP & Gamification System
 
 ## Users earn XP by:
 
@@ -251,7 +251,7 @@ Battle scoring depends on:
 
 ---
 
-# 🔥 Streak System
+## 🔥 Streak System
 
 Role: Encourage consistent learning habits.
 
@@ -324,7 +324,7 @@ Features:
 
 ---
 
-# 📅 Daily Quest System
+## 📅 Daily Quest System
 
 Users receive dynamic daily objectives such as:
 
@@ -340,9 +340,9 @@ Rewards:
 
 ---
 
-# ⚙️ Backend & Database
+## ⚙️ Backend & Database
 
-## 🗄️ Supabase Integration
+### 🗄️ Supabase Integration
 
 Supabase powers:
 
@@ -427,7 +427,7 @@ Repeat 🔁
 
 ---
 
-# 🔐 Security & Best Practices
+## 🔐 Security & Best Practices
 
 ✅ Environment variables protected using `.env`
 ✅ Supabase authentication system
@@ -437,9 +437,9 @@ Repeat 🔁
 
 ---
 
-# 🧪 How to Run Locally
+## 🧪 How to Run Locally
 
-## Prerequisites
+### Prerequisites
 
 * Node.js 18+
 * npm
