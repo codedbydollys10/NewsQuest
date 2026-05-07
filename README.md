@@ -37,7 +37,7 @@ It blends:
 - progress tracking
 
 This makes current events engaging, memorable, and fun.
->>>>>>> e99749f2 (update logo)
+
 
 ---
 
@@ -736,12 +736,6 @@ NewsQuest/
 ---
 
 
-# ⭐ If You Like This Project
-
-Give it a ⭐ on GitHub and support interactive learning through AI-powered news gaming!
-
----
-
 # 💬 Final Thought
 
 NewsQuest is not just a news app — it’s a gamified intelligence platform.
@@ -751,3 +745,12 @@ NewsQuest is not just a news app — it’s a gamified intelligence platform.
 **NewsQuest is more than a news reader — it is a gamified learning companion for curious minds.**
 
 > “Read, answer, predict, and compete with the news.”
+
+
+
+
+# ⭐ If You Like This Project
+
+Give it a ⭐ on GitHub and support interactive learning through AI-powered news gaming!
+
+---
