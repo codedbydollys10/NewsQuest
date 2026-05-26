@@ -5,7 +5,7 @@
 # 🚀 NewsQuest — Play the News. Predict the Future.
 ## 🧠 Overview
 
-NewsQuest is a full-stack, AI-powered, gamified news platform that transforms passive news consumption into an interactive learning experience.
+NewsQuest is a full-stack, AI-powered, gamified news platform that transforms passive news consumption into an interactive learning experience for the users.
 
 Instead of endlessly scrolling headlines, users can:
 
