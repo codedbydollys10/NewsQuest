@@ -753,6 +753,6 @@ NewsQuest is not just a news app — it’s a gamified intelligence platform.
 
 ## ⭐ If You Like This Project
 
-Give it a ⭐ on GitHub and support interactive learning through AI-powered news gaming!
+Give it a ⭐ on GitHub and support interactive learning through AI-powered news gaming!!
 
 ---
