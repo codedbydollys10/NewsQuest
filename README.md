@@ -344,12 +344,12 @@ Rewards:
 
 ### 🗄️ Supabase Integration
 
-Supabase powers:
+### Supabase powers:
 
-✅ Authentication
-✅ Database storage
-✅ Real-time systems
-✅ User progression tracking
+- ✅ Authentication
+- ✅ Database storage
+- ✅ Real-time systems
+- ✅ User progression tracking
 =======
 ### 🔹 Backend
 
