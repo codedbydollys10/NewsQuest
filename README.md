@@ -18,7 +18,7 @@ Instead of endlessly scrolling headlines, users can:
 ### Built with modern web technologies and AI-powered content generation
 
 #### NewsQuest combines education, engagement, prediction intelligence, and competitive gameplay into one immersive platform.
-=======
+
 ## 🎥 Demo
 
 Watch the project demo and screenshots here:
