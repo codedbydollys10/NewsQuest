@@ -186,6 +186,8 @@ Output:
 ✅ Mobile-first UI
 ✅ Interactive article experience
 
+---
+
 Categories include:
 
 * Politics
