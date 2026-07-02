@@ -745,7 +745,6 @@ NewsQuest/
 NewsQuest is not just a news app — it’s a gamified intelligence platform.
 
 > “Don’t just read the news. Play it. Predict it. Master it.” 🚀
-=======
 **NewsQuest is more than a news reader — it is a gamified learning companion for curious minds.**
 
 > “Read, answer, predict, and compete with the news.”
