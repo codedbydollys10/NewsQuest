@@ -13,7 +13,7 @@ Instead of endlessly scrolling headlines, users can:
 🧪 Solve quizzes generated from real articles
 🔮 Predict future outcomes of world events
 ⚔️ Battle other users in real-time quiz challenges
-📈 Earn XP, maintain streaks, and climb leaderboards
+📈 Earn XP, maintain streaks, and climb leaderboard
 
 ### Built with modern web technologies and AI-powered content generation
 
